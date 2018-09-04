@@ -1,0 +1,47 @@
+ 
+网址：http://www.cnblogs.com/mcodec/articles/1735765.html
+
+QTSS服务器是当今三大流媒体服务器之一，其开源的版本是darwin streaming server。作为三大主要流式媒体应用中唯一一个开放源代码的产品，DSS让开发人员能够研究流媒体最底层的技术，大幅度提高设计水平。事实上，当前国内外许多公司正是在DSS的基础上开发了自己的流式媒体相关产品。但是DSS源码量比较大，简单统计一下5.5版本总共大约13万行代码，虽然DSS源码组织结构很好，但是入门的门槛还是比较高。
+
+   
+
+    为降低入门门槛，首先要做的就是把DSS源码简化，下面简单介绍一下我对5.5版本裁剪优化的过程。
+
+    从网上下载到5.5版的源码，整个压缩包有20多兆，解开压缩包，里面有很多测试用的多媒体文件，实际代码小很多。
+
+    用VC6打开WinNTSupport子目录下的工程文件StreamingServer.dsw。选FileView标签页展开StreamingServer files模块前面的加号，可以看到主程序依赖四个模块分别是 CommonUtilitiesLib APICommonCode APIStubLib SafeInternalStdLib QTFileLib，再点开这几个模块前面的加号，可以看到整个工程就只依赖这几个模块。把不用的其他模块统统的删掉，好畅快淋漓哦。庞大的DSS现在只剩下6个大模块了。
+
+    分大模块点开所有的文件，鼠标光标自动在每个文件的顶端，所有文件都按两下回车，再一起保存，为的是把工程需要的文件做个时间标记，所有修改时间不是当前的文件都是没有实际使用的文件。
+
+    哈哈，有很好的办法去除实际不使用的文件，在资源管理器中搜索DSS目录下的所有.h文件，把修改时间不是当前时间的文件统统删掉。同样的办法处理一遍.c文件和.cpp文件。
+
+    再在资源管理器中遍历DSS目录下的所有子目录，把即没有.h文件，有没有.c文件或.cpp文件的子目录统统删掉。
+
+    大话西游的经典台词出来了，"整个世界清净了"。
+
+    再设置StreamingServer files为Active project，编译一下。
+
+    哈哈，一次编译通过，刚才的一阵狂砍乱剁中没有删掉有用的文件。再接再励，顺便把那些即不是源码又不是VC工程文件的文件删掉，DSS现在好小巧苗条哦。
+
+    再大概统计一下源代码总共大约8.9万行，实际程序代码5.4万行。如果再删掉编译要用但最小程序不使用的如mp3，http等模块，最后可以减到4万行左右。
+
+   
+
+    代码初步简化完了，就得安装程序跑跑看效果，如果上网方便可以在网上找到很多安装的教程。如果上网不方便，按照程序提示也能做好。
+
+    在VC6 IDE开发环境中点击run按钮，程序运行有提示：
+    Darwin Streaming Server must either be started from the DOS Console    
+    using the -d command-line option, or using the Service Control Manager
+
+    看提示在命令行带-d参数再运行程序，程序有提示：
+    Fatal Error：Could not load configuration file at c:\Program Files\Darwin Streaming Server\streamingserver.xml
+    
+    很明显提示少了streamingserver.xml文件，在Darwin目录下搜streamingserver.xml文件，已经有此文件了，那就按照提示把streamingserver.xml文件拷贝到c:\Program Files\Darwin Streaming Server目录下。既然是xml文件，就用文本打开看一下了，里面好多c:\Program Files\Darwin Streaming Server\XXX 这样的路径，那就按照这些提示把相关路径都建好。
+   
+    聪明的大家看到Movies子目录了，放电影的地方嘛，接着把DSS源码附带的*.3gp文件和*.mp4文件拷贝到此目录，如果担心放错目录，那就在Darwin Streaming Server目录和所有子目录中都放媒体文件。
+
+    再开VLC，用打开网络串流的方式打开 rtsp://localhost/sample_100kbit.mp4 文件。
+   
+    哈哈，大功告成。
+
+    以后就是各位网友优化dss源码的事情了。祝各位网友顺顺利利地看懂源码，做出更牛牛的流媒体服务器。
